@@ -1,30 +1,11 @@
-import s from './Contacts.module.css';
-import ButtonDelete from './ButtonDelete';
-import { useSelector, useDispatch } from 'react-redux';
-import { filterteredContacts } from '../../redux/selectors';
-import { deleteContact } from '../../redux/actions';
+import ContactsItem from './ContactsItem/ContactsItem';
 
-export default function Contacts() {
-  const contacts = useSelector(filterteredContacts);
-  const dispatch = useDispatch();
-
+export default function Contacts({ contacts }) {
   return (
     <ul>
-      {contacts.map(contact => {
-        return (
-          <li className={s.contact} key={contact.id}>
-            {contact.name}: {contact.number}{' '}
-            <ButtonDelete
-              type="button"
-              text="Delete"
-              id={contact.id}
-              onClick={() => {
-                dispatch(deleteContact(contact.id));
-              }}
-            ></ButtonDelete>
-          </li>
-        );
-      })}
+      {contacts.map(contact => (
+        <ContactsItem key={contact.id} contact={contact} />
+      ))}
     </ul>
   );
 }

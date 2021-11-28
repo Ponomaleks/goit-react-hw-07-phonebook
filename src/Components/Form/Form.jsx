@@ -1,22 +1,31 @@
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import s from './Form.module.css';
 import Button from './Button';
 import InputName from './InputName';
 import InputTel from './InputTel';
-import { useDispatch } from 'react-redux';
-import { addContact } from '../../redux/actions';
+import Loader from '../Loader';
+import { useAddContactMutation, useGetContactsQuery } from '../../redux/phonebook';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Form() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const [addContact, { isLoading: isAdding }] = useAddContactMutation();
+  const { data } = useGetContactsQuery();
 
-  const dispatch = useDispatch();
-
+  console.log(data);
   const handleSubmit = e => {
     e.preventDefault();
-    dispatch(addContact({ name, number, id: uuidv4() }));
-    // onSubmit({ name: name, number: number });
+    const nameIsPresent = data.find(cont => cont.name.toLowerCase() === name.toLowerCase());
+    if (nameIsPresent) {
+      toast.info(({ data }) => `${data} is already among your contact`, {
+        data: name,
+      });
+      return;
+    }
+    addContact({ name, number });
+
     clearForm();
   };
 
@@ -38,12 +47,24 @@ export default function Form() {
         return;
     }
   };
-
   return (
     <form className={s.form} name="addContact" onSubmit={handleSubmit}>
       <InputName value={name} onChange={handleChange} name="name"></InputName>
       <InputTel value={number} onChange={handleChange} name="number" />
-      <Button type="submit" text="Add contact"></Button>
+      <Button type="submit" disabled={!name || !number}>
+        Add contact {isAdding && <Loader height={14} width={14} color={'gray'} />}
+      </Button>
+      <ToastContainer
+        position="top-center"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </form>
   );
 }

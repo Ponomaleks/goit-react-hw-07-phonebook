@@ -1,8 +1,10 @@
 .submitBtn {
-  display: block;
+  display: flex;
+  justify-content: space-around;
   margin: 10px;
-  font-size: 16px;
+  font-size: 14px;
   transition: 150ms;
+  width: 120px;
 }
 
 .submitBtn:hover,
